@@ -95,6 +95,12 @@ func (k Keeper) UpdateClient(ctx sdk.Context, clientID string, header exported.H
 		)
 	}()
 
+	// emit the full header in events
+	var headerStr string
+	if header != nil {
+		headerStr = string(types.MustMarshalHeader(k.cdc, header))
+	}
+
 	// emitting events in the keeper emits for both begin block and handler client updates
 	ctx.EventManager().EmitEvent(
 		sdk.NewEvent(
@@ -102,6 +108,7 @@ func (k Keeper) UpdateClient(ctx sdk.Context, clientID string, header exported.H
 			sdk.NewAttribute(types.AttributeKeyClientID, clientID),
 			sdk.NewAttribute(types.AttributeKeyClientType, clientState.ClientType()),
 			sdk.NewAttribute(types.AttributeKeyConsensusHeight, consensusHeight.String()),
+			sdk.NewAttribute(types.AttributeKeyHeader, headerStr),
 		),
 	)
 

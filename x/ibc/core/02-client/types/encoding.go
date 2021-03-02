@@ -84,3 +84,30 @@ func UnmarshalConsensusState(cdc codec.BinaryMarshaler, bz []byte) (exported.Con
 
 	return consensusState, nil
 }
+
+// MarshalHeader protobuf serializes a Header interface
+func MarshalHeader(cdc codec.BinaryMarshaler, h exported.Header) ([]byte, error) {
+	return cdc.MarshalInterface(h)
+}
+
+// MustMarshalHeader attempts to encode a Header object and returns the
+// raw encoded bytes. It panics on error.
+func MustMarshalHeader(cdc codec.BinaryMarshaler, header exported.Header) []byte {
+	bz, err := MarshalHeader(cdc, header)
+	if err != nil {
+		panic(fmt.Errorf("failed to encode header: %w", err))
+	}
+
+	return bz
+}
+
+// UnmarshalHeader returns a Header interface from raw proto encoded header bytes.
+// An error is returned upon decoding failure.
+func UnmarshalHeader(cdc codec.BinaryMarshaler, bz []byte) (exported.Header, error) {
+	var header exported.Header
+	if err := cdc.UnmarshalInterface(bz, &header); err != nil {
+		return nil, err
+	}
+
+	return header, nil
+}
